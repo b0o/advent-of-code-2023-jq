@@ -2,6 +2,8 @@
 
 I'm doing [Advent of Code 2023](https://adventofcode.com/2023) in [jq](https://jqlang.github.io/jq/) because jq is more expressive than you think.
 
+My goal isn't to find the shortest or most performant solution, but to try to write solutions that are as readable and intuitive as possible.
+
 ## Usage
 
 Use the `run.sh` script to run the puzzle. Pass the puzzle number as an argument. Runs the example puzzle by default.
