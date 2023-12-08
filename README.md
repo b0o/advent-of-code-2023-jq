@@ -6,7 +6,7 @@ My goal isn't to find the shortest or most performant solution, but to try to wr
 
 ## Usage
 
-Use the `run.sh` script to run the puzzle. Pass the puzzle number as an argument. Runs the example puzzle by default.
+Use the `run.sh` script to run the puzzle. Pass the puzzle number as an argument. Runs the example input by default.
 To run the actual puzzle, put it in `./${puzzle_number}/input.txt` and run `./run.sh -t ${puzzle_number}`.
 
 ```sh
