@@ -21,7 +21,7 @@ Options:
 
 ## Solutions
 
-- ✅ [01-1](https://github.com/b0o/aoc-2023-jq/blob/main/01-1/solution.jq) 
+- ✅ [01-1](https://github.com/b0o/advent-of-code-2023-jq/blob/main/01-1/solution.jq) 
 
 ## License
 
