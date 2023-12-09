@@ -19,63 +19,31 @@ EOF
 }
 
 function main() {
-  local puzzle
   local use_example=1
-  local watch=false
-  while getopts ":hetw" opt; do
+  local watch=-1
+  while getopts ":hetwW" opt; do
     case "$opt" in
-    h)
-      usage
-      ;;
-    e)
-      use_example=1
-      ;;
-    t)
-      use_example=0
-      ;;
-    w)
-      watch=true
-      ;;
-    *)
-      usage
-      ;;
+    h) usage ;;
+    e) use_example=1 ;;
+    t) use_example=0 ;;
+    w) [[ "$watch" == -1 ]] && watch=1 ;;
+    W) watch=0 ;;
+    *) usage ;;
     esac
   done
   shift $((OPTIND - 1))
-  puzzle="$1"
-  if [[ -z "$puzzle" ]]; then
-    usage
-  fi
-  if [[ "$watch" == true ]]; then
-    watch_puzzle "$puzzle" "$use_example"
-  else
-    run_puzzle "$puzzle" "$use_example"
-  fi
-}
-
-function watch_puzzle() {
   local puzzle="$1"
-  local use_example="$2"
-  local input
-  if [[ "$use_example" == 1 ]]; then
-    input="example.txt"
-  else
-    input="input.txt"
+  local puzzle_dir="$base_dir/$puzzle"
+  [[ -z "$puzzle" ]] && usage && exit 1
+  [[ ! -d "$puzzle_dir" ]] && echo "Puzzle $puzzle not found" && exit 1
+  if [[ "$watch" == 1 ]]; then
+    find "$puzzle_dir" -type f | entr "${BASH_SOURCE[0]}" -W "$@"
+    exit $?
   fi
-  local jq_filter_file="$base_dir/$puzzle/solution.jq"
-  local input_file="$base_dir/$puzzle/$input"
-  local -a flags=()
-  if [[ $use_example == 1 ]]; then
-    flags+=("-e")
-  else
-    flags+=("-t")
-  fi
-  echo -e "$jq_filter_file\n$input_file" | entr "${BASH_SOURCE[0]}" "${flags[@]}" "$puzzle"
+  run_puzzle
 }
 
 function run_puzzle() {
-  local puzzle="$1"
-  local use_example="$2"
   local input
   if [[ "$use_example" == 1 ]]; then
     input="example.txt"
@@ -84,6 +52,8 @@ function run_puzzle() {
   fi
   local jq_filter_file="$base_dir/$puzzle/solution.jq"
   local input_file="$base_dir/$puzzle/$input"
+  [[ ! -f "$jq_filter_file" ]] && echo "Solution file not found: $jq_filter_file" && exit 1
+  [[ ! -f "$input_file" ]] && echo "Input file not found: $input_file" && exit 1
   echo "$puzzle <- $input"
   jq -Rsf "$jq_filter_file" "$input_file"
 }
