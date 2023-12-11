@@ -58,7 +58,8 @@ function run_puzzle() {
   [[ ! -f "$jq_filter_file" ]] && echo "Solution file not found: $jq_filter_file" && exit 1
   [[ ! -f "$input_file" ]] && echo "Input file not found: $input_file" && exit 1
   echo "$puzzle <- $input"
-  jq -Rsf "$jq_filter_file" "$input_file"
+  perl -pe 'chomp if eof' "$input_file" | # remove trailing newline from end of file
+    jq -Rsf "$jq_filter_file"
 }
 
 main "$@"
