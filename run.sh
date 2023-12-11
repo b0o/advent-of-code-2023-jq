@@ -37,8 +37,11 @@ function main() {
   [[ -z "$puzzle" ]] && usage && exit 1
   [[ ! -d "$puzzle_dir" ]] && echo "Puzzle $puzzle not found" && exit 1
   if [[ "$watch" == 1 ]]; then
-    find "$puzzle_dir" -type f | entr "${BASH_SOURCE[0]}" -W "$@"
-    exit $?
+    echo "Watching $puzzle_dir"
+    {
+      echo "${BASH_SOURCE[0]}"
+      find "$puzzle_dir" -type f
+    } | entr "${BASH_SOURCE[0]}" -W "$@"
   fi
   run_puzzle
 }
