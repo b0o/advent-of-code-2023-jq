@@ -1,5 +1,4 @@
 .
-| split("\n")
 | map(
    .
    | split("")

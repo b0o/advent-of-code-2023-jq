@@ -39,7 +39,6 @@ def first_num: get_num(true);
 def last_num: get_num(false);
 
 .
-| split("\n")
 | map(
    .
    | [first_num, last_num]
