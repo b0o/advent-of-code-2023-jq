@@ -42,7 +42,6 @@ def last_num: get_num(false);
 | split("\n")
 | map(
    .
-   | select(length > 0)
    | [first_num, last_num]
    | join("")
    | tonumber
