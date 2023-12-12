@@ -21,7 +21,7 @@ EOF
 function main() {
   local use_example=1
   local watch=-1
-  local opts=("$@")
+  local -a opts=("$@")
   while getopts ":hetwW" opt; do
     case "$opt" in
     h) usage ;;
@@ -33,22 +33,42 @@ function main() {
     esac
   done
   shift $((OPTIND - 1))
-  local puzzle="$1"
-  local puzzle_dir="$base_dir/$puzzle"
-  [[ -z "$puzzle" ]] && usage && exit 1
-  [[ ! -d "$puzzle_dir" ]] && echo "Puzzle $puzzle not found" && exit 1
   if [[ "$watch" == 1 ]]; then
-    echo "Watching $puzzle_dir"
-    {
-      echo "${BASH_SOURCE[0]}"
-      find "$puzzle_dir" -type f
-    } | entr "${BASH_SOURCE[0]}" -W "${opts[@]}"
+    local puzzle="${1:-}"
+    echo "Watching for changes"
+    local -a entr_opts=()
+    local -a files=("${BASH_SOURCE[0]}")
+    if [[ -n "$puzzle" ]]; then
+      mapfile -t files < <(find "$base_dir/$puzzle" -type f)
+    else
+      entr_opts+=(-p -d)
+      mapfile -t files < <(find "$base_dir/"[0-9]* -type f)
+    fi
+    printf '%s\n' "${files[@]}" | entr "${entr_opts[@]}" "${BASH_SOURCE[0]}" -W "${opts[@]}" /_
     exit $?
   fi
-  run_puzzle
+  if [[ $watch -eq 0 && "${1:-}" =~ ^[0-9]+$ ]]; then
+    exit 0
+  fi
+  local -a puzzles=()
+  if [[ $# -gt 0 ]]; then
+    puzzles=("$@")
+  else
+    mapfile -t puzzles < <(find "$base_dir/"[0-9]* -type f -name "solution.jq" -printf "%h\n" | sort | xargs -n1 basename)
+  fi
+  for puzzle in "${puzzles[@]}"; do
+    run_puzzle "$puzzle"
+  done
 }
 
 function run_puzzle() {
+  local puzzle="${1:-}"
+  if [[ -f "$puzzle" && $watch -eq 0 ]]; then
+    puzzle="$(basename "$(dirname "$puzzle")")"
+  fi
+  local puzzle_dir="$base_dir/$puzzle"
+  [[ -z "$puzzle" ]] && usage && exit 1
+  [[ ! -d "$puzzle_dir" ]] && echo "Puzzle $puzzle not found" && exit 1
   local input
   if [[ "$use_example" == 1 ]]; then
     input="example.txt"
@@ -60,8 +80,8 @@ function run_puzzle() {
   [[ ! -f "$jq_filter_file" ]] && echo "Solution file not found: $jq_filter_file" && exit 1
   [[ ! -f "$input_file" ]] && echo "Input file not found: $input_file" && exit 1
   echo "$puzzle <- $input"
-  perl -pe 'chomp if eof' "$input_file" | # remove trailing newline from end of file
-    jq -Rsf "$jq_filter_file"
+  jq -Rs 'split("\n")[0:-1]' "$input_file" | # split into lines and remove trailing newline from EOF
+    jq -f "$jq_filter_file"
 }
 
 main "$@"
