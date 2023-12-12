@@ -21,6 +21,7 @@ EOF
 function main() {
   local use_example=1
   local watch=-1
+  local opts=("$@")
   while getopts ":hetwW" opt; do
     case "$opt" in
     h) usage ;;
@@ -41,7 +42,8 @@ function main() {
     {
       echo "${BASH_SOURCE[0]}"
       find "$puzzle_dir" -type f
-    } | entr "${BASH_SOURCE[0]}" -W "$@"
+    } | entr "${BASH_SOURCE[0]}" -W "${opts[@]}"
+    exit $?
   fi
   run_puzzle
 }
