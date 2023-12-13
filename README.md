@@ -25,6 +25,8 @@ Options:
 
 - ✅ [01-1](https://github.com/b0o/advent-of-code-2023-jq/blob/main/01-1/solution.jq) 
 - ✅ [01-2](https://github.com/b0o/advent-of-code-2023-jq/blob/main/01-2/solution.jq) 
+- ✅ [02-1](https://github.com/b0o/advent-of-code-2023-jq/blob/main/02-1/solution.jq) 
+- ✅ [02-2](https://github.com/b0o/advent-of-code-2023-jq/blob/main/02-2/solution.jq) 
 
 ## License
 
