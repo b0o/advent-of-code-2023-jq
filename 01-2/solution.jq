@@ -31,17 +31,14 @@ def find_nums($first):
 
 # Find the first (if $first is true) or last num in the input string.
 def get_num($first):
-  .
-  | find_nums($first)
+  find_nums($first)
   | if $first then min_by(.index) else max_by(.index) end
   | .num;
 def first_num: get_num(true);
 def last_num: get_num(false);
 
-.
-| map(
-   .
-   | [first_num, last_num]
+map(
+   [first_num, last_num]
    | join("")
    | tonumber
   )

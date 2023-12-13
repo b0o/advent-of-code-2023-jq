@@ -1,8 +1,7 @@
 def possible($bag):
   to_entries | reduce .[] as $e (true; . and $e.value <= $bag[$e.key]);
 
-.
-| map(
+map(
   split(": ")
   | {
     game: .[0] | split(" ") | .[1],
